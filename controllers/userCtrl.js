@@ -31,8 +31,8 @@ const register = async (req, res) => {
   var cookie = req.cookies.refreshtoken
   if (cookie === undefined) {
    res.cookie("refreshtoken", refreshtoken, {
-    httpOnly: true,
-    path: "/user/refresh_token",
+    secure: true,
+    sameSite: "None",
    })
   }
 
@@ -60,7 +60,6 @@ const login = async (req, res) => {
    sameSite: "None",
    maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
   })
-  res.cookie("username", "JohnDoe", { maxAge: 24 * 60 * 60 * 1000 })
 
   return res.json({ accesstoken })
  } catch (error) {
@@ -85,9 +84,8 @@ const loginDashboard = async (req, res) => {
    const accesstoken = createAccessToken({ id: user._id })
    const refreshtoken = createRefreshToken({ id: user._id })
    res.cookie("refreshtoken", refreshtoken, {
-    httpOnly: true,
-    secure: false,
-    path: "/",
+    secure: true,
+    sameSite: "None",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
    })
    return res.json({ accesstoken })

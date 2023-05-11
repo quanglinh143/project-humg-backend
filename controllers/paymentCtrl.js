@@ -1,11 +1,10 @@
 import Payments from "../models/paymentModel.js"
 import Users from "../models/userModel.js"
 import Products from "../models/productModel.js"
-import moment from "moment"
-import momenta from "moment-timezone"
+
 const getPayments = async (req, res) => {
  try {
-  const payments = await Payments.find()
+  const payments = await Payments.find().sort({ createdAt: -1 })
   res.json(payments)
  } catch (error) {
   return res.status(500).json({ msg: error.message })
