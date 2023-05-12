@@ -68,7 +68,8 @@ const login = async (req, res) => {
   // })
 
   // return res.json({ accesstoken })
-  res.cookie("myCookie", "myValue", { secure: true })
+  console.log("123")
+  res.cookie("myCookie", "myValue", { secure: true, sameSite: "none" })
   return res.json({ msg: "success" })
  } catch (error) {
   return res.status(500).json({ msg: error.message })
