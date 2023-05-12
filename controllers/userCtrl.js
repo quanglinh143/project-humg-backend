@@ -80,7 +80,6 @@ const loginDashboard = async (req, res) => {
   }
   if (user.role == 1) {
    // If login success , create access token and refresh token
-   console.log("user", user)
    const accesstoken = createAccessToken({ id: user._id })
    const refreshtoken = createRefreshToken({ id: user._id })
    res.cookie("refreshtoken", refreshtoken, {

@@ -144,7 +144,6 @@ const dailyDiscover = async (req, res) => {
     payments[payments.length - 1].cart.map((item) => {
      return item.category
     })
-
    const products = await Product.find({
     ...(filterCategory.length > 0 && { category: filterCategory }),
    })
