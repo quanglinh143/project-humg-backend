@@ -61,9 +61,7 @@ const login = async (req, res) => {
   const accesstoken = createAccessToken({ id: user._id })
   const refreshtoken = createRefreshToken({ id: user._id })
   res.cookie("refreshtoken", refreshtoken, {
-   httpOnly: false,
    secure: true,
-   sameSite: "none",
    maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
   })
 
@@ -91,7 +89,6 @@ const loginDashboard = async (req, res) => {
    res.cookie("refreshtoken", refreshtoken, {
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
    })
-   res.cookie("aaaaaa", "aaaaaa")
 
    return res.json({ accesstoken })
   }

@@ -10,6 +10,20 @@ const getPayments = async (req, res) => {
   return res.status(500).json({ msg: error.message })
  }
 }
+
+const getPaymentById = async (req, res) => {
+ const { id } = req.params
+ try {
+  const payments = await Payments.findById(id)
+  if (!payments) {
+   return res.status(500).json({ msg: "This payment code is not available" })
+  }
+  res.json(payments)
+ } catch (error) {
+  return res.status(500).json({ msg: error.message })
+ }
+}
+
 const createPayment = async (req, res) => {
  try {
   const user = await Users.findById(req.user.id).select("name email")
@@ -72,6 +86,7 @@ const getRevenues = async (req, res) => {
 
 export default {
  getPayments,
+ getPaymentById,
  createPayment,
  getRevenues,
 }

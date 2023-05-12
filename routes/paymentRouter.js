@@ -10,6 +10,10 @@ router
  .get(authMiddleware, authAdminMiddleware, PaymentCtrl.getPayments)
  .post(authMiddleware, PaymentCtrl.createPayment)
 
+router
+ .route("/payment/:id")
+ .get(authMiddleware, authAdminMiddleware, PaymentCtrl.getPaymentById)
+
 router.route("/revenue").get(PaymentCtrl.getRevenues)
 
 export default router
