@@ -62,7 +62,7 @@ const login = async (req, res) => {
   const refreshtoken = createRefreshToken({ id: user._id })
   res.cookie("refreshtoken", refreshtoken, {
    secure: true,
-   domain: "https://chamm.onrender.com/",
+   domain: "chamm.onrender.com/",
    path: "/",
    maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
   })
