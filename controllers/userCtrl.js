@@ -29,12 +29,18 @@ const register = async (req, res) => {
   const accesstoken = createAccessToken({ id: newUser._id })
   const refreshtoken = createRefreshToken({ id: newUser._id })
   var cookie = req.cookies.refreshtoken
-  if (cookie === undefined) {
-   res.cookie("refreshtoken", refreshtoken, {
-    secure: true,
-    sameSite: "None",
-   })
-  }
+  // if (cookie === undefined) {
+  //  res.cookie("refreshtoken", refreshtoken, {
+  //   secure: false,
+  //   path: "/user/refresh_token",
+  //   maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
+  //  })
+  // }
+  res.cookie("refreshtoken", refreshtoken, {
+   secure: false,
+   path: "/user/refresh_token",
+   maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
+  })
 
   res.json({ accesstoken })
   // res.json({ msg: "Register Success!" })
@@ -56,8 +62,8 @@ const login = async (req, res) => {
   const accesstoken = createAccessToken({ id: user._id })
   const refreshtoken = createRefreshToken({ id: user._id })
   res.cookie("refreshtoken", refreshtoken, {
-   secure: true,
-   sameSite: "None",
+   secure: false,
+   path: "/user/refresh_token",
    maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
   })
 
@@ -83,8 +89,8 @@ const loginDashboard = async (req, res) => {
    const accesstoken = createAccessToken({ id: user._id })
    const refreshtoken = createRefreshToken({ id: user._id })
    res.cookie("refreshtoken", refreshtoken, {
-    secure: true,
-    sameSite: "None",
+    secure: false,
+    path: "/user/refresh_token",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
    })
    return res.json({ accesstoken })
