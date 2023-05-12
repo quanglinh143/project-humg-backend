@@ -64,6 +64,7 @@ const login = async (req, res) => {
    secure: true,
    httpOnly: true,
    domain: "chamm.onrender.com/",
+   SameSite: "Strict",
    path: "/",
    maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
   })
