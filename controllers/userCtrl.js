@@ -61,11 +61,6 @@ const login = async (req, res) => {
   const accesstoken = createAccessToken({ id: user._id })
   const refreshtoken = createRefreshToken({ id: user._id })
   res.cookie("refreshtoken", refreshtoken, {
-   secure: true,
-   httpOnly: true,
-   domain: "chamm.onrender.com/",
-   SameSite: "Strict",
-   path: "/",
    maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
   })
 

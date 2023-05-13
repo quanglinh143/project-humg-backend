@@ -4,7 +4,7 @@ import cors from "cors"
 import fileUpload from "express-fileupload"
 import cookieParser from "cookie-parser"
 import dotenv from "dotenv"
-
+import cookieSession from "cookie-session"
 // import routers
 import userRouter from "./routes/userRouter.js"
 import categoryRouter from "./routes/categoryRouter.js"
