@@ -4,6 +4,9 @@
  "main": "server.js",
  "license": "MIT",
  "type": "module",
+ "engines": {
+  "node": "16.x"
+ },
  "scripts": {
   "dev": "nodemon server.js"
  },
