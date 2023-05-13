@@ -60,7 +60,7 @@ const login = async (req, res) => {
   // If login success , create access token and refresh token
   const accesstoken = createAccessToken({ id: user._id })
   const refreshtoken = createRefreshToken({ id: user._id })
-  res.cookie("refreshtoken", refreshtoken, {
+  res.cookie("refreshtoken", JSON.stringify(refreshtoken), {
    maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
   })
   res.cookie("name", "geeksforgeeks")
