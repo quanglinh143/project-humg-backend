@@ -64,7 +64,7 @@ const login = async (req, res) => {
    maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
    sameSite: "none",
    httpOnly: false,
-   secure: true,
+   secure: false,
   })
 
   return res.json({ accesstoken })
