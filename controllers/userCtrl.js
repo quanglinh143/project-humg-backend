@@ -49,6 +49,9 @@ const register = async (req, res) => {
 }
 
 const login = async (req, res) => {
+ res.header("Access-Control-Allow-Headers", "*")
+ res.header("Access-Control-Allow-Credentials", true)
+ res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE")
  try {
   const { email, password } = req.body
   const user = await Users.findOne({ email })
@@ -60,10 +63,10 @@ const login = async (req, res) => {
   // If login success , create access token and refresh token
   const accesstoken = createAccessToken({ id: user._id })
   const refreshtoken = createRefreshToken({ id: user._id })
-  res.cookie("refreshtoken", JSON.stringify(refreshtoken), {
+  res.cookie("refreshtoken", refreshtoken, {
    maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
+   httpOnly: false,
   })
-  res.cookie("name", "geeksforgeeks")
 
   return res.json({ accesstoken })
  } catch (error) {
