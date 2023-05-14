@@ -50,9 +50,9 @@ const register = async (req, res) => {
 }
 
 const login = async (req, res) => {
- //  res.header("Access-Control-Allow-Headers", "*")
- //  res.header("Access-Control-Allow-Credentials", true)
- //  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE")
+ res.header("Access-Control-Allow-Headers", "*")
+ res.header("Access-Control-Allow-Credentials", true)
+ res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE")
  try {
   const { email, password } = req.body
   const user = await Users.findOne({ email })
