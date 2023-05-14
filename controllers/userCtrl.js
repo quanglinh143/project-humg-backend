@@ -37,9 +37,9 @@ const register = async (req, res) => {
   //  })
   // }
   res.cookie("refreshtoken", refreshtoken, {
+   httpOnly: false,
    path: "/user/refresh_token",
    maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
-   httpOnly: false,
   })
 
   res.json({ accesstoken })
@@ -50,9 +50,9 @@ const register = async (req, res) => {
 }
 
 const login = async (req, res) => {
- res.header("Access-Control-Allow-Headers", "*")
- res.header("Access-Control-Allow-Credentials", true)
- res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE")
+ //  res.header("Access-Control-Allow-Headers", "*")
+ //  res.header("Access-Control-Allow-Credentials", true)
+ //  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE")
  try {
   const { email, password } = req.body
   const user = await Users.findOne({ email })
@@ -65,8 +65,9 @@ const login = async (req, res) => {
   const accesstoken = createAccessToken({ id: user._id })
   const refreshtoken = createRefreshToken({ id: user._id })
   res.cookie("refreshtoken", refreshtoken, {
-   maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
    httpOnly: false,
+   path: "/user/refresh_token",
+   maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
   })
 
   return res.json({ accesstoken })
@@ -91,8 +92,9 @@ const loginDashboard = async (req, res) => {
    const accesstoken = createAccessToken({ id: user._id })
    const refreshtoken = createRefreshToken({ id: user._id })
    res.cookie("refreshtoken", refreshtoken, {
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
     httpOnly: false,
+    path: "/user/refresh_token",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
    })
 
    return res.json({ accesstoken })
