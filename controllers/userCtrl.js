@@ -106,7 +106,7 @@ const loginDashboard = async (req, res) => {
 
 const logout = async (req, res) => {
  try {
-  res.clearCookie("refreshtoken", { secure: true })
+  res.clearCookie("refreshtoken", { httpOnly: false, secure: true })
   res.json({ msg: "Logged out!" })
  } catch (error) {
   return res.status(500).json({ msg: error.message })
