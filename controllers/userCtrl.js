@@ -39,6 +39,7 @@ const register = async (req, res) => {
   res.cookie("refreshtoken", refreshtoken, {
    path: "/user/refresh_token",
    maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
+   httpOnly: false,
   })
 
   res.json({ accesstoken })
@@ -91,6 +92,7 @@ const loginDashboard = async (req, res) => {
    const refreshtoken = createRefreshToken({ id: user._id })
    res.cookie("refreshtoken", refreshtoken, {
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
+    httpOnly: false,
    })
 
    return res.json({ accesstoken })
