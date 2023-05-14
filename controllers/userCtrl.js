@@ -37,7 +37,7 @@ const register = async (req, res) => {
   //  })
   // }
   res.cookie("refreshtoken", refreshtoken, {
-   httpOnly: false,
+   httpOnly: true,
    path: "/user/refresh_token",
    maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
   })
@@ -50,9 +50,9 @@ const register = async (req, res) => {
 }
 
 const login = async (req, res) => {
- res.header("Access-Control-Allow-Headers", "*")
- res.header("Access-Control-Allow-Credentials", true)
- res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE")
+ //  res.header("Access-Control-Allow-Headers", "*")
+ //  res.header("Access-Control-Allow-Credentials", true)
+ //  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE")
  try {
   const { email, password } = req.body
   const user = await Users.findOne({ email })
@@ -66,6 +66,7 @@ const login = async (req, res) => {
   const refreshtoken = createRefreshToken({ id: user._id })
   res.cookie("refreshtoken", refreshtoken, {
    httpOnly: false,
+   path: "/user/refresh_token",
    maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
   })
 
@@ -91,8 +92,8 @@ const loginDashboard = async (req, res) => {
    const accesstoken = createAccessToken({ id: user._id })
    const refreshtoken = createRefreshToken({ id: user._id })
    res.cookie("refreshtoken", refreshtoken, {
-    httpOnly: false,
-    path: "/",
+    httpOnly: true,
+    path: "/user/refresh_token",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
    })
 
@@ -106,7 +107,10 @@ const loginDashboard = async (req, res) => {
 
 const logout = async (req, res) => {
  try {
-  res.clearCookie("refreshtoken", { httpOnly: false, secure: true })
+  res.clearCookie("refreshtoken", {
+   httpOnly: false,
+   path: "/user/refresh_token",
+  })
   res.json({ msg: "Logged out!" })
  } catch (error) {
   return res.status(500).json({ msg: error.message })
