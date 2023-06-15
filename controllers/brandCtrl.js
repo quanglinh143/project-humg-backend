@@ -50,7 +50,7 @@ const selectBrands = async (req, res) => {
   }
   res.json(results)
  } catch (error) {
-  return res.status(500).json({ msg: "An error has occurred" })
+  return res.status(500).json({ msg: "Đã có lỗi xảy ra" })
  }
 }
 
@@ -61,10 +61,10 @@ const deleteBrands = async (req, res) => {
   if (products)
    return res
     .status(400)
-    .json({ msg: "Please delete all products with relationship." })
+    .json({ msg: "Vui lòng xóa tất cả sản phẩm liên quan" })
   await Brand.findByIdAndDelete(req.params.id)
 
-  return res.json({ msg: "Deleted by ID." })
+  return res.json({ msg: "Xóa thành công" })
  } catch (error) {
   return res.status(500).json({ msg: error.message })
  }
@@ -75,11 +75,11 @@ const updateBrands = async (req, res) => {
   const { name } = req.body
   const { id } = req.params
   const exists = await Brand.findOne({ name })
-  if (exists) return res.status(400).json({ msg: "This brand already exists." })
+  if (exists) return res.status(400).json({ msg: "Nhãn hàng này đã tồn tại" })
 
   await Brand.findOneAndUpdate({ _id: id }, { name: name }, { new: true })
 
-  return res.json({ msg: "Updated by ID." })
+  return res.json({ msg: "Cập nhật thành công" })
  } catch (error) {
   return res.status(500).json({ msg: error.message })
  }
@@ -89,12 +89,12 @@ const createBrand = async (req, res) => {
  try {
   const { name } = req.body
   const brand = await Brand.findOne({ name })
-  if (brand) return res.status(400).json({ msg: "This brand already exists." })
+  if (brand) return res.status(400).json({ msg: "Nhãn hàng này đã tồn tại" })
 
   const newBrand = new Brand({ name })
   await newBrand.save()
 
-  res.json({ msg: "Created a brand" })
+  res.json({ msg: "Thêm mới thành công" })
  } catch (error) {
   return res.status(500).json({ msg: error.message })
  }

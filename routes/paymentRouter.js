@@ -11,8 +11,13 @@ router
  .post(authMiddleware, PaymentCtrl.createPayment)
 
 router
- .route("/payment/:id")
- .get(authMiddleware, authAdminMiddleware, PaymentCtrl.getPaymentById)
+ .route("/payment/:idPayment")
+ .get(authMiddleware, PaymentCtrl.getPaymentById)
+router
+ .route("/paymentAdmin/:id")
+ .get(authMiddleware, authAdminMiddleware, PaymentCtrl.getPaymentDetailsByAdmin)
+
+router.route("/orderStatus").post(PaymentCtrl.orderStatusPayment)
 
 router.route("/revenue").get(PaymentCtrl.getRevenues)
 

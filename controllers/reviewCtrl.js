@@ -66,19 +66,19 @@ const createReviewsProductById = async (req, res) => {
 
  try {
   const exists = await Review.findOne({ ID_User: idUser, ID_Product: id })
-  if (exists) return res.status(400).json({ msg: "This user rated." })
+  if (exists) return res.status(400).json({ msg: "Sản phẩm đã được đánh giá." })
   const bought = payments.find((item) => {
    return item?.cart.find((cart) => {
-    return item.user_id === idUser && cart._id === id
+    return item.user_id === idUser && cart._id === id && item.status === "3"
    })
   })
   if (!bought)
    return res
     .status(400)
-    .json({ msg: "You need to buy this product to get a review." })
+    .json({ msg: "Bạn cần mua sản phẩm này để được đánh giá." })
   const getUserReview = await User.findOne({ _id: idUser })
   if (!comment || !rating)
-   return res.status(400).json({ msg: "Please enter enough review fields." })
+   return res.status(400).json({ msg: "Vui lòng nhập đủ trường dữ liệu." })
   const newReview = new Review({
    ID_User: idUser,
    ID_Product: id,
@@ -88,7 +88,7 @@ const createReviewsProductById = async (req, res) => {
    name: getUserReview.name,
   })
   await newReview.save()
-  res.json({ msg: "Created a review" })
+  res.json({ msg: "Đánh giá thành công" })
  } catch (error) {
   return res.status(500).json({ msg: error.message })
  }

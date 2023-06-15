@@ -44,8 +44,8 @@ const userSchema = new mongoose.Schema(
   },
   rank: {
    type: String,
-   enum: ["brass", "silver", "gold", "platinum", "diamond"],
-   default: "brass",
+   enum: ["đồng", "bạc", "vàng", "bạch kim", "kim cương"],
+   default: "đồng",
   },
   discount: {
    type: Number,

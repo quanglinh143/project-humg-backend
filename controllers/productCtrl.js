@@ -56,16 +56,32 @@ const getProductById = async (req, res) => {
 }
 
 const createProducts = async (req, res) => {
- const { name, price, description, content, images, category, brand } = req.body
+ const {
+  name,
+  price,
+  description,
+  content,
+  images,
+  category,
+  brand,
+  quantity,
+ } = req.body
  try {
   if (!images)
-   return res.status(400).json({ msg: " Không có ảnh được tải lên." })
-  if (!name || !price || !description || !content || !category || !brand)
-   return res.status(400).json({ msg: " Vui lòng nhập đủ trường dữ liệu." })
+   return res.status(400).json({ msg: "Không có ảnh được tại lên." })
+  if (
+   !name ||
+   !price ||
+   !description ||
+   !content ||
+   !category ||
+   !brand ||
+   !quantity
+  )
+   return res.status(400).json({ msg: "Vui lòng nhập đủ trường dữ liệu." })
 
   const product = await Product.findOne({ name })
-  if (product)
-   return res.status(400).json({ msg: "This product already exists." })
+  if (product) return res.status(400).json({ msg: "Sản phẩm đã tồn tại." })
   const newProduct = new Product({
    name,
    price,
@@ -74,34 +90,41 @@ const createProducts = async (req, res) => {
    images,
    category,
    brand,
+   quantity,
+   remaining: quantity,
   })
   await newProduct.save()
+  res.json({ msg: "Thêm sản phẩm mới thành công." })
  } catch (error) {
-  res.json({ msg: "An error has occurred!" })
+  res.json({ msg: "Đã có lỗi xảy ra" })
  }
- res.json({ msg: "Successfully added new products." })
 }
 
 const updateProducts = async (req, res) => {
+ const { values } = req.body
+ const { id } = req.params
+
  try {
-  const { id } = req.params
-  const { name, price, description, content, images, category } = req.body
-  if (!images)
-   return res.status(400).json({ msg: " Không có ảnh được tải lên." })
-  await Products.findOneAndUpdate(
+  //  const { name, price, description, content, images, category } = req.body
+  // if (!images) return res.status(400).json({ msg: " No photos uploaded." })
+  if (values.quantity < values.sold)
+   return res.status(400).json({
+    msg: " Sô lương không được nhỏ hơn số lượng đã bán.",
+   })
+  await Product.findOneAndUpdate(
    { _id: id },
    {
-    name: name,
-    price,
-    description,
-    content,
-    images,
-    category,
+    name: values.name,
+    price: values.price,
+    description: values.description,
+    content: values.content,
+    quantity: values.quantity,
+    remaining: values.quantity - values.sold,
    },
    { new: true }
   )
 
-  return res.json({ msg: "Updated by ID." })
+  return res.json({ msg: "Cập nhật thành công." })
  } catch (error) {
   return res.status(500).json({ msg: error.msg })
  }
@@ -112,7 +135,7 @@ const deleteProducts = async (req, res) => {
 
  try {
   await Product.findOneAndDelete({ _id: id })
-  res.json({ msg: "Deleted a Product." })
+  res.json({ msg: "Xóa sản phẩm thành công." })
  } catch (error) {
   return res.status(500).json({ msg: error.msg })
  }
@@ -128,7 +151,7 @@ const selectProducts = async (req, res) => {
   }
   res.json(results)
  } catch (error) {
-  return res.status(500).json({ msg: "An error has occurred" })
+  return res.status(500).json({ msg: "Đã có lỗi xảy ra." })
  }
 }
 
@@ -157,7 +180,7 @@ const dailyDiscover = async (req, res) => {
    return res.json(results)
   }
  } catch (error) {
-  return res.status(500).json({ msg: "An error has occurred" })
+  return res.status(500).json({ msg: "Đã có lỗi xảy ra." })
  }
 }
 

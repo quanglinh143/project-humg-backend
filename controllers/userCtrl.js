@@ -8,11 +8,9 @@ const register = async (req, res) => {
   const { name, email, password } = req.body
 
   const user = await Users.findOne({ email })
-  if (user) return res.status(400).json({ msg: "The email already exists." })
+  if (user) return res.status(400).json({ msg: "Email đã tồn tại" })
   if (password.length < 6)
-   return res
-    .status(400)
-    .json({ msg: "Password is at least 6 characters long." })
+   return res.status(400).json({ msg: "Mật khẩu dài ít nhất 6 ký tự" })
 
   // Password Encryption
   const passwordHash = await bcrypt.hash(password, 10)
@@ -28,14 +26,7 @@ const register = async (req, res) => {
 
   const accesstoken = createAccessToken({ id: newUser._id })
   const refreshtoken = createRefreshToken({ id: newUser._id })
-  var cookie = req.cookies.refreshtoken
-  // if (cookie === undefined) {
-  //  res.cookie("refreshtoken", refreshtoken, {
-  //   secure: false,
-  //   path: "/user/refresh_token",
-  //   maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
-  //  })
-  // }
+
   res.cookie("refreshtoken", refreshtoken, {
    httpOnly: true,
    path: "/user/refresh_token",
@@ -43,29 +34,25 @@ const register = async (req, res) => {
   })
 
   res.json({ accesstoken })
-  // res.json({ msg: "Register Success!" })
  } catch (error) {
   return res.status(500).json({ msg: error.message })
  }
 }
 
 const login = async (req, res) => {
- res.header("Access-Control-Allow-Headers", "*")
- res.header("Access-Control-Allow-Credentials", true)
- res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE")
  try {
   const { email, password } = req.body
   const user = await Users.findOne({ email })
-  if (!user) return res.status(400).json({ msg: "User does not exist." })
+  if (!user) return res.status(400).json({ msg: "Người dùng không tồn tại" })
 
   const isMatch = await bcrypt.compare(password, user.password)
-  if (!isMatch) return res.status(400).json({ msg: "Incorrect password." })
+  if (!isMatch) return res.status(400).json({ msg: "Mật khẩu không đúng" })
 
   // If login success , create access token and refresh token
   const accesstoken = createAccessToken({ id: user._id })
   const refreshtoken = createRefreshToken({ id: user._id })
   res.cookie("refreshtoken", refreshtoken, {
-   httpOnly: false,
+   httpOnly: true,
    path: "/user/refresh_token",
    maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
   })
@@ -80,12 +67,12 @@ const loginDashboard = async (req, res) => {
  try {
   const { email, password } = req.body
   const user = await Users.findOne({ email })
-  if (!user) return res.status(400).json({ msg: "User does not exist." })
+  if (!user) return res.status(400).json({ msg: "Người dùng không tồn tại" })
 
   const isMatch = await bcrypt.compare(password, user.password)
-  if (!isMatch) return res.status(400).json({ msg: "Incorrect password." })
+  if (!isMatch) return res.status(400).json({ msg: "Mật khẩu không đúng" })
   if (user.role == 0) {
-   return res.status(400).json({ msg: "Account is not admin." })
+   return res.status(400).json({ msg: "Tài khoản không phải ADMIN" })
   }
   if (user.role == 1) {
    // If login success , create access token and refresh token
@@ -99,7 +86,7 @@ const loginDashboard = async (req, res) => {
 
    return res.json({ accesstoken })
   }
-  return res.status(200).json({ msg: "Login successfully." })
+  return res.status(200).json({ msg: "Đăng nhập thành công" })
  } catch (error) {
   return res.status(500).json({ msg: error.message })
  }
@@ -107,11 +94,8 @@ const loginDashboard = async (req, res) => {
 
 const logout = async (req, res) => {
  try {
-  res.clearCookie("refreshtoken", {
-   httpOnly: false,
-   path: "/user/refresh_token",
-  })
-  res.json({ msg: "Logged out!" })
+  res.clearCookie("refreshtoken", { path: "/" })
+  res.json({ msg: "Đăng xuất!" })
  } catch (error) {
   return res.status(500).json({ msg: error.message })
  }
@@ -121,33 +105,29 @@ const changePassword = async (req, res) => {
  try {
   const { id, oldPassword, password, rePassword } = req.body
   if (password.length < 6)
-   return res
-    .status(400)
-    .json({ msg: "Password is at least 6 characters long." })
+   return res.status(400).json({ msg: "Mật khẩu ít nhất 6 ký tự" })
   if (password !== rePassword)
-   return res.status(400).json({ msg: "Re-enter new password incorrect." })
+   return res.status(400).json({ msg: "Nhập lại mật khẩu" })
   // Password Encryption
   const passwordHash = await bcrypt.hash(password, 10)
   const user = await Users.findById(id)
-  if (!user) return res.status(400).send("User not found.")
+  if (!user) return res.status(400).send("Người dùng không tồn tại")
   // validate old password
   const isValidPassword = await bcrypt.compare(oldPassword, user.password)
   if (!isValidPassword) {
-   return res.status(400).send({ msg: "Please enter correct old password." })
+   return res.status(400).send({ msg: "Vui lòng nhập mật khẩu" })
   }
 
   // update user's password
   if (oldPassword === password) {
-   return res
-    .status(500)
-    .json({ msg: "The new password must be different from the old password." })
+   return res.status(500).json({ msg: "Mật khẩu mới phải khác mật khẩu cũ" })
   }
   await Users.findOneAndUpdate(
    { _id: id },
    { password: passwordHash },
    { new: true }
   )
-  return res.status(200).json({ msg: "Change password successfully." })
+  return res.status(200).json({ msg: "Đổi mật khẩu thành công" })
  } catch (error) {
   res.status(500).json({ msg: error.message })
  }
@@ -156,7 +136,6 @@ const changePassword = async (req, res) => {
 const updateInfo = async (req, res) => {
  const { id, name, avatar, phone_number, date_of_birth, address, gender } =
   req.body
-
  try {
   await Users.findOneAndUpdate(
    { _id: id },
@@ -170,7 +149,7 @@ const updateInfo = async (req, res) => {
    },
    { new: true }
   )
-  return res.json({ msg: "Updated successfully." })
+  return res.json({ msg: "Cập nhật thành công" })
  } catch (error) {
   return res.status(500).json({ msg: error.message })
  }
@@ -179,12 +158,12 @@ const updateInfo = async (req, res) => {
 const getUser = async (req, res) => {
  try {
   const user = await Users.findById(req.user.id)
-  if (!user) return res.status(400).json({ msg: "User does not exist." })
+  if (!user) return res.status(400).json({ msg: "Người dùng không tồn tại" })
 
   const listPayment = await Payments.find()
 
   const checkListPayment = listPayment.filter((i) => {
-   return i.user_id === user._id.toString()
+   return i.user_id === user._id.toString() && i.status === "3"
   })
 
   const totalPayment = checkListPayment?.reduce((prev, item) => {
@@ -192,25 +171,25 @@ const getUser = async (req, res) => {
   }, 0)
   const setRank = (totalPayment) => {
    if (totalPayment <= 0 || (totalPayment > 0 && totalPayment <= 5000)) {
-    return "brass"
-   } else if (totalPayment > 5000 && totalPayment <= 8000) {
-    return "silver"
-   } else if (totalPayment > 8000 && totalPayment <= 13000) {
-    return "gold"
-   } else if (totalPayment > 13000 && totalPayment <= 2000) {
-    return "platinum"
+    return "đồng"
+   } else if (totalPayment > 5000000 && totalPayment <= 8000000) {
+    return "bạc"
+   } else if (totalPayment > 8000000 && totalPayment <= 13000000) {
+    return "vàng"
+   } else if (totalPayment > 13000000 && totalPayment <= 20000000) {
+    return "bạch kim"
    } else {
-    return "diamond"
+    return "kim cương"
    }
   }
   const setDiscount = (totalPayment) => {
    if (totalPayment <= 0 || (totalPayment > 0 && totalPayment <= 5000)) {
     return 0
-   } else if (totalPayment > 5000 && totalPayment <= 8000) {
+   } else if (totalPayment > 5000000 && totalPayment <= 8000000) {
     return 1
-   } else if (totalPayment > 8000 && totalPayment <= 13000) {
+   } else if (totalPayment > 8000000 && totalPayment <= 13000000) {
     return 3
-   } else if (totalPayment > 13000 && totalPayment <= 2000) {
+   } else if (totalPayment > 13000000 && totalPayment <= 20000000) {
     return 5
    } else {
     return 10
@@ -234,7 +213,7 @@ const getUser = async (req, res) => {
 const addCart = async (req, res) => {
  try {
   const user = await Users.findById(req.user.id)
-  if (!user) return res.status(400).json({ msg: "User does not exist." })
+  if (!user) return res.status(400).json({ msg: "Người dùng không tồn tại" })
 
   await Users.findOneAndUpdate(
    { _id: req.user.id },
@@ -242,7 +221,7 @@ const addCart = async (req, res) => {
     cart: req.body.cart,
    }
   )
-  res.status(200).json({ msg: "Add to cart successfully." })
+  res.status(200).json({ msg: "Thêm vào giỏ hàng thàng công" })
  } catch (error) {
   res.status(500).json({ msg: error.message })
  }
@@ -250,10 +229,12 @@ const addCart = async (req, res) => {
 
 const history = async (req, res) => {
  try {
-  const history = await Payments.find({ user_id: req.user.id })
+  const history = await Payments.find({ user_id: req.user.id }).sort({
+   createdAt: -1,
+  })
   res.json(history)
  } catch (error) {
-  return res.status(500).json({ msg: "An error has occurred" })
+  return res.status(500).json({ msg: "Đã có lỗi xảy ra" })
  }
 }
 
@@ -289,7 +270,7 @@ const getTotalUser = async (req, res) => {
   }
   res.json(results)
  } catch (error) {
-  return res.status(500).json({ msg: "An error has occurred" })
+  return res.status(500).json({ msg: "Đã có lỗi xảy ra" })
  }
 }
 
@@ -300,13 +281,13 @@ const refreshToken = async (req, res) => {
   if (!rf_token)
    return res
     .status(400)
-    .json({ msg: "Please Login or Register - refresh token" })
+    .json({ msg: "Vui lòng đăng nhập hoặc đăng ký - refresh token" })
 
   jwt.verify(rf_token, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
    if (err)
     return res
      .status(400)
-     .json({ msg: "Please Login or Register - verify token" })
+     .json({ msg: "Vui lòng đăng nhập hoặc đăng ký  - verify token" })
 
    const accesstoken = createAccessToken({ id: user.id })
 

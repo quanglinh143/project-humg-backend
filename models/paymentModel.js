@@ -14,12 +14,14 @@ const paymentSchema = new mongoose.Schema(
    type: String,
    required: true,
   },
+  phone_number: {
+   type: String,
+  },
   paymentID: {
    type: String,
-   required: true,
   },
   address: {
-   type: Object,
+   type: String,
    required: true,
   },
   cart: {
@@ -31,8 +33,17 @@ const paymentSchema = new mongoose.Schema(
    default: 0,
   },
   status: {
-   type: Boolean,
-   default: false,
+   type: String,
+   enum: ["0", "1", "2", "3", "4"],
+   default: "0",
+  },
+  methodShipping: {
+   type: String,
+   enum: ["0", "1"],
+  },
+  coupon: {
+   type: String,
+   default: null,
   },
  },
  {

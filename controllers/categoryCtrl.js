@@ -61,7 +61,7 @@ const deleteCategories = async (req, res) => {
   if (products)
    return res
     .status(400)
-    .json({ msg: "Please delete all products with relationship." })
+    .json({ msg: "Vui lòng xóa tất cả sản phẩm liên quan" })
   await Category.findByIdAndDelete(req.params.id)
 
   return res.json({ msg: "Deleted by ID." })
@@ -75,8 +75,7 @@ const updateCategories = async (req, res) => {
   const { name } = req.body
   const { id } = req.params
   const exists = await Category.findOne({ name })
-  if (exists)
-   return res.status(400).json({ msg: "This category already exists." })
+  if (exists) return res.status(400).json({ msg: "Thể loại này đã tồn tại" })
   await Category.findOneAndUpdate({ _id: id }, { name: name }, { new: true })
   return res.json({ msg: "Updated by ID." })
  } catch (error) {
@@ -90,13 +89,12 @@ const createCategory = async (req, res) => {
   // only admin can CRUD
   const { name } = req.body
   const category = await Category.findOne({ name })
-  if (category)
-   return res.status(400).json({ msg: "This category already exists." })
+  if (category) return res.status(400).json({ msg: "Thể loại này đã tồn tại" })
 
   const newCategory = new Category({ name })
   await newCategory.save()
 
-  res.json({ msg: "Created a category" })
+  res.json({ msg: "Thêm mới thành công" })
  } catch (error) {
   return res.status(500).json({ msg: error.message })
  }

@@ -8,7 +8,9 @@ const authAdmin = async (req, res, next) => {
   })
 
   if (user.role === 0)
-   return res.status(400).json({ msg: "Admin resources access denied" })
+   return res
+    .status(400)
+    .json({ msg: "Quyền truy cập tài nguyên quản trị bị từ chối" })
 
   next()
  } catch (err) {
